@@ -1,4 +1,4 @@
-@file:Suppress("JAVA_CLASS_ON_COMPANION")
+//@file:Suppress("JAVA_CLASS_ON_COMPANION")
 
 package com.besaba.anvarov.orenclock
 
@@ -6,22 +6,25 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.RemoteViews
 import java.text.DateFormat
 import java.util.*
+
 
 /**
  * Implementation of App Widget functionality.
  */
 class ClockWidget : AppWidgetProvider() {
 
-    private val updateWidgets = "updateWidgets"
+    private val myLogs = "myLogs"
+    private var service: PendingIntent? = null
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
+        Log.d(myLogs, "onUpdate")
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
@@ -29,31 +32,32 @@ class ClockWidget : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        val intent = Intent(context, ClockWidget.javaClass)
-        intent.action = updateWidgets
-        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-        val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pIntent)
+        Log.d(myLogs, "onEnabled")
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        val intent = Intent(context, ClockWidget.javaClass)
-        intent.action = updateWidgets
-        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-        val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.cancel(pIntent)
+        Log.d(myLogs, "onDisabled")
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
-        if (intent?.action.equals(updateWidgets, true)) {
-            val thisAppWidget = ComponentName(context?.packageName, javaClass.name)
-            val appWidgetManager = AppWidgetManager.getInstance(context)
-            for (appWidgetId in appWidgetManager.getAppWidgetIds(thisAppWidget)) {
-                updateAppWidget(context!!, appWidgetManager, appWidgetId)
-            }
+        Log.d(myLogs, "onReceive")
+
+//        Получаем объект AlarmManager и установим время начала отсчёта интервала
+// (в данном случае отсчёт начнётся сразу после запуска задачи)
+        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val startTime = Calendar.getInstance()
+        startTime.set(Calendar.MINUTE, 0)
+        startTime.set(Calendar.SECOND, 0)
+        startTime.set(Calendar.MILLISECOND, 0)
+//        Получаем созданную ранее вспомогательную службу
+        val i = Intent(context, ClockWidgetUpdateService::class.java)
+        if (service == null) {
+            service = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT)
         }
+//        Далее запускаем задачу
+        manager.setRepeating(AlarmManager.RTC, startTime.getTime().getTime(), 60000, service)
     }
 
     companion object {
