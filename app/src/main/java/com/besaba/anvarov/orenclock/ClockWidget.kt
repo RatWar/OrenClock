@@ -57,7 +57,7 @@ class ClockWidget : AppWidgetProvider() {
             service = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT)
         }
 //        Далее запускаем задачу
-        manager.setRepeating(AlarmManager.RTC, startTime.getTime().getTime(), 60000, service)
+        manager.setRepeating(AlarmManager.RTC, startTime.time.time, 60000, service)
     }
 
     companion object {
@@ -80,7 +80,16 @@ class ClockWidget : AppWidgetProvider() {
         }
 
         private fun getCurTime(): String {
-            return DateFormat.getTimeInstance(DateFormat.SHORT).format(Calendar.getInstance().time)
+            val cal: Calendar = Calendar.getInstance()
+            val min = cal.get(Calendar.MINUTE)
+            val hour = cal.get(Calendar.HOUR_OF_DAY)
+
+            return when {
+                (cal.get(Calendar.MINUTE) <= 9) -> {
+                    hour.toString() + ":" + "0" + min
+                }
+                else -> hour.toString() + ":" + min
+            }
         }
     }
 

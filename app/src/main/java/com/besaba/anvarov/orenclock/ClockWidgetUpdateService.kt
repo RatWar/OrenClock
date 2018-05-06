@@ -5,14 +5,14 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 
 class ClockWidgetUpdateService : Service() {
-    override fun onCreate() {
-        super.onCreate()
-    }
+    private val myLogs = "myLogs"
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         updateInfoWidget()
+        Log.d(myLogs, "onStartCommand")
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -20,7 +20,7 @@ class ClockWidgetUpdateService : Service() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         val ids = appWidgetManager.getAppWidgetIds(ComponentName(this.applicationContext.packageName,
                 ClockWidget::class.java.name))
-                ClockWidget.updateAppWidget(this.getApplicationContext(),appWidgetManager,ids[0])
+                ClockWidget.updateAppWidget(this.applicationContext,appWidgetManager,ids[0])
     }
 
     override fun onBind(intent: Intent): IBinder? {
