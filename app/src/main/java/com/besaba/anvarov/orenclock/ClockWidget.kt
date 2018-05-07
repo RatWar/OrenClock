@@ -8,7 +8,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.RemoteViews
 import java.text.DateFormat
 import java.util.*
@@ -19,30 +18,20 @@ import java.util.*
  */
 class ClockWidget : AppWidgetProvider() {
 
-    private val myLogs = "myLogs"
+//    private val myLogs = "myLogs"
     private var service: PendingIntent? = null
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
-        Log.d(myLogs, "onUpdate")
+//        Log.d(myLogs, "onUpdate")
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
     }
 
-    override fun onEnabled(context: Context) {
-        super.onEnabled(context)
-        Log.d(myLogs, "onEnabled")
-    }
-
-    override fun onDisabled(context: Context) {
-        super.onDisabled(context)
-        Log.d(myLogs, "onDisabled")
-    }
-
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
-        Log.d(myLogs, "onReceive")
+//        Log.d(myLogs, "onReceive")
 
 //        Получаем объект AlarmManager и установим время начала отсчёта интервала
 // (в данном случае отсчёт начнётся сразу после запуска задачи)
@@ -57,7 +46,7 @@ class ClockWidget : AppWidgetProvider() {
             service = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT)
         }
 //        Далее запускаем задачу
-        manager.setRepeating(AlarmManager.RTC, startTime.time.time, 60000, service)
+        manager.setInexactRepeating(AlarmManager.RTC, startTime.time.time, 60000, service)
     }
 
     companion object {
@@ -65,12 +54,12 @@ class ClockWidget : AppWidgetProvider() {
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
                                      appWidgetId: Int) {
 
-            // Construct the RemoteViews object
+            // делаю RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.clock_widget)
             views.setTextViewText(R.id.tvDate, getCurDate())
             views.setTextViewText(R.id.tvTime, getCurTime())
 
-            // Instruct the widget manager to update the widget
+            // обновляю виджет
             appWidgetManager.updateAppWidget(appWidgetId, views)
 
         }

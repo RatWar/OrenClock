@@ -11,8 +11,8 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="0dp"
         android:background="#009C"
-        android:contentDescription="@string/appwidget_text"
-        android:text="@string/appwidget_text"
+        android:contentDescription="@string/appwidget_time"
+        android:text="@string/appwidget_time"
         android:textColor="#ffffff"
         android:textSize="80sp"
         android:textStyle="bold|italic"/>
@@ -25,8 +25,8 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="0dp"
         android:background="#009C"
-        android:contentDescription="@string/appwidget_text"
-        android:text="@string/appwidget_text"
+        android:contentDescription="@string/appwidget_date"
+        android:text="@string/appwidget_date"
         android:textColor="#ffffff"
         android:textSize="24sp"
         android:textStyle="bold|italic"/>
