@@ -18,17 +18,11 @@ class ClockWidgetUpdateService : Service() {
     private fun updateInfoWidget() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         // получаю id виджетов
-        val ids: IntArray?
-        ids = try {
-            appWidgetManager.getAppWidgetIds(ComponentName(this.applicationContext.packageName,
-                    ClockWidget::class.java.name))
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-        }
+        val ids = appWidgetManager.getAppWidgetIds(ComponentName(this.applicationContext.packageName,
+                ClockWidget::class.java.name))
 
 //        Log.d(myLogs, "onStartCommand " + ids[0].toString())
-        if (ids!!.isNotEmpty())
+        if (ids != null)
             ClockWidget.updateAppWidget(this.applicationContext, appWidgetManager, ids[0])  // обновляю только один виджет
     }
 

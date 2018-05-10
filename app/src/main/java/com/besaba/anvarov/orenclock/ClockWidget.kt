@@ -8,6 +8,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.widget.RemoteViews
 import java.text.DateFormat
 import java.util.*
@@ -58,6 +59,8 @@ class ClockWidget : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.clock_widget)
             views.setTextViewText(R.id.tvDate, getCurDate())
             views.setTextViewText(R.id.tvTime, getCurTime())
+            views.setTextViewText(R.id.tvAlarm, appWidgetId.toString())
+            views.setViewVisibility(R.id.ivAlarm, View.INVISIBLE)
 
             // обновляю виджет
             appWidgetManager.updateAppWidget(appWidgetId, views)
