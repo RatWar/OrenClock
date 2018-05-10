@@ -3,4 +3,6 @@
     <string name="appwidget_date">Date</string>
     <string name="appwidget_time">Time</string>
     <string name="add_widget">Add widget</string>
+    <string name="txtAlarm">06:45</string>
+    <string name="htAlarm">Alarm</string>
 </resources>

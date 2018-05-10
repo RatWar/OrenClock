@@ -18,9 +18,18 @@ class ClockWidgetUpdateService : Service() {
     private fun updateInfoWidget() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         // получаю id виджетов
-        val ids = appWidgetManager.getAppWidgetIds(ComponentName(this.applicationContext.packageName, ClockWidget::class.java.name))
+        val ids: IntArray?
+        ids = try {
+            appWidgetManager.getAppWidgetIds(ComponentName(this.applicationContext.packageName,
+                    ClockWidget::class.java.name))
+        }
+        catch (e: ArrayIndexOutOfBoundsException) {
+            null
+        }
+
 //        Log.d(myLogs, "onStartCommand " + ids[0].toString())
-        ClockWidget.updateAppWidget(this.applicationContext, appWidgetManager, ids[0])  // обновляю только один виджет
+        if (ids!!.isNotEmpty())
+            ClockWidget.updateAppWidget(this.applicationContext, appWidgetManager, ids[0])  // обновляю только один виджет
     }
 
     override fun onBind(intent: Intent): IBinder? {

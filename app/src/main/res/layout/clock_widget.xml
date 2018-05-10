@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#009C"
@@ -15,7 +16,20 @@
         android:text="@string/appwidget_time"
         android:textColor="#ffffff"
         android:textSize="80sp"
-        android:textStyle="bold|italic"/>
+        android:textStyle="bold|italic"
+        tools:layout_toStartOf="@+id/ivAlarm"/>
+
+    <ImageView
+        android:id="@+id/ivAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_toEndOf="@+id/tvTime"
+        android:contentDescription="@string/htAlarm"
+        android:src="@drawable/access_alarms"/>
 
     <TextView
         android:id="@+id/tvDate"
@@ -28,6 +42,17 @@
         android:contentDescription="@string/appwidget_date"
         android:text="@string/appwidget_date"
         android:textColor="#ffffff"
+        android:textSize="24sp"
+        android:textStyle="bold|italic"/>
+
+    <TextView
+        android:id="@+id/tvAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvTime"
+        android:layout_alignStart="@+id/ivAlarm"
+        android:layout_marginStart="8dp"
+        android:text="@string/txtAlarm"
         android:textSize="24sp"
         android:textStyle="bold|italic"/>
 
