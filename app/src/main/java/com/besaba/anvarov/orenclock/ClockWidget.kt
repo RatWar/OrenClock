@@ -65,9 +65,7 @@ class ClockWidget : AppWidgetProvider() {
             val alarmInfo = manager.nextAlarmClock.triggerTime
 
             for (appWidgetId in ids) {
-                if (context != null) {
-                    updateAppWidget(context, appWidgetManager, appWidgetId, alarmInfo)
-                }
+                updateAppWidget(context, appWidgetManager, appWidgetId, alarmInfo)
             }
         }
     }
