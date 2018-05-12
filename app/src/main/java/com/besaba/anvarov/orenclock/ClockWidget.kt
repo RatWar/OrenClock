@@ -6,8 +6,10 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import java.text.DateFormat
@@ -19,48 +21,79 @@ import java.util.*
  */
 class ClockWidget : AppWidgetProvider() {
 
-//    private val myLogs = "myLogs"
-    private var service: PendingIntent? = null
+    private val myLogs = "myLogs"
+    private val updateWidget = "updateWidget"
+
+    override fun onEnabled(context: Context?) {
+        Log.d(myLogs, "onEnabled")
+        super.onEnabled(context)
+        val intent = Intent(context, ClockWidget::class.java)
+        intent.action = updateWidget
+        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        manager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pIntent)
+    }
+
+    override fun onDisabled(context: Context?) {
+        Log.d(myLogs, "onDisabled")
+        super.onDisabled(context)
+        val intent = Intent(context, ClockWidget::class.java)
+        intent.action = updateWidget
+        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        manager.cancel(pIntent)
+    }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
-//        Log.d(myLogs, "onUpdate")
+        Log.d(myLogs, "onUpdate")
         for (appWidgetId in appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId)
+            updateAppWidget(context, appWidgetManager, appWidgetId, 0)
         }
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
-//        Log.d(myLogs, "onReceive")
+        Log.d(myLogs, "onReceive")
 
-//        Получаем объект AlarmManager и установим время начала отсчёта интервала
-// (в данном случае отсчёт начнётся сразу после запуска задачи)
-        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val startTime = Calendar.getInstance()
-        startTime.set(Calendar.MINUTE, 0)
-        startTime.set(Calendar.SECOND, 0)
-        startTime.set(Calendar.MILLISECOND, 0)
-//        Получаем созданную ранее вспомогательную службу
-        val i = Intent(context, ClockWidgetUpdateService::class.java)
-        if (service == null) {
-            service = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT)
+        if (intent?.action.equals(updateWidget)) {
+            val thisAppWidget = ComponentName(context?.packageName, ClockWidget::class.java.name)
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
+
+            val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val alarmInfo = manager.nextAlarmClock.triggerTime
+
+            for (appWidgetId in ids) {
+                if (context != null) {
+                    updateAppWidget(context, appWidgetManager, appWidgetId, alarmInfo)
+                }
+            }
         }
-//        Далее запускаем задачу
-        manager.setInexactRepeating(AlarmManager.RTC, startTime.time.time, 60000, service)
     }
 
     companion object {
 
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
-                                     appWidgetId: Int) {
+                                     appWidgetId: Int, triggerTime: Long) {
 
             // делаю RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.clock_widget)
             views.setTextViewText(R.id.tvDate, getCurDate())
             views.setTextViewText(R.id.tvTime, getCurTime())
-            views.setTextViewText(R.id.tvAlarm, appWidgetId.toString())
-            views.setViewVisibility(R.id.ivAlarm, View.INVISIBLE)
+
+            val alarmUp = triggerTime > 0
+
+            when {
+                alarmUp -> {
+                    views.setViewVisibility(R.id.ivAlarm, View.VISIBLE)
+                    views.setTextViewText(R.id.tvAlarm, triggerTime.toString())
+                }
+                else -> {
+                    views.setViewVisibility(R.id.ivAlarm, View.INVISIBLE)
+                    views.setViewVisibility(R.id.tvAlarm, View.INVISIBLE)
+                }
+            }
 
             // обновляю виджет
             appWidgetManager.updateAppWidget(appWidgetId, views)
