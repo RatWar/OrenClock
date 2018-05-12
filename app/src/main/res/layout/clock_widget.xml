@@ -53,7 +53,7 @@
         android:layout_alignStart="@+id/ivAlarm"
         android:layout_marginStart="8dp"
         android:text="@string/txtAlarm"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textStyle="bold|italic"/>
 
 </RelativeLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Большие часы</string>
+    <string name="appwidget_date">Дата</string>
+    <string name="appwidget_time">Время</string>
+    <string name="txtAlarm">Сигнал</string>
+    <string name="htAlarm">Сигнал</string>
+</resources>
