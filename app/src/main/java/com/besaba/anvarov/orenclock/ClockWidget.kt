@@ -52,7 +52,8 @@ class ClockWidget : AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
-        if (intent?.action.equals(updateWidget)) {
+        if (intent?.action.equals(updateWidget) or
+                intent?.action.equals("android.app.action.NEXT_ALARM_CLOCK_CHANGED")) {
             val thisAppWidget = ComponentName(context?.packageName, ClockWidget::class.java.name)
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
@@ -61,6 +62,7 @@ class ClockWidget : AppWidgetProvider() {
                 updateAppWidget(context, appWidgetManager, appWidgetId)
             }
         }
+
     }
 
     companion object {
