@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#009C"
@@ -9,26 +8,28 @@
         android:id="@+id/tvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:background="#009C"
         android:contentDescription="@string/appwidget_time"
         android:text="@string/appwidget_time"
         android:textColor="#ffffff"
         android:textSize="80sp"
-        android:textStyle="bold|italic"
-        tools:layout_toStartOf="@+id/ivAlarm"/>
+        android:textStyle="bold|italic"/>
 
-    <ImageView
-        android:id="@+id/ivAlarm"
+    <TextView
+        android:id="@+id/tvAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_toEndOf="@+id/tvTime"
-        android:contentDescription="@string/htAlarm"
-        android:src="@drawable/access_alarms"/>
+        android:layout_toEndOf="@id/tvTime"
+        android:layout_alignBaseline="@+id/tvTime"
+        android:layout_marginStart="8dp"
+        android:background="#009C"
+        android:text="@string/txtAlarm"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:textStyle="bold|italic"
+        android:drawableTop="@drawable/access_alarms"/>
 
     <TextView
         android:id="@+id/tvDate"
@@ -44,16 +45,6 @@
         android:textSize="24sp"
         android:textStyle="bold|italic"/>
 
-    <TextView
-        android:id="@+id/tvAlarm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/tvTime"
-        android:layout_alignStart="@+id/ivAlarm"
-        android:layout_marginStart="8dp"
-        android:background="#009C"
-        android:text="@string/txtAlarm"
-        android:textSize="16sp"
-        android:textStyle="bold|italic"/>
+
 
 </RelativeLayout>

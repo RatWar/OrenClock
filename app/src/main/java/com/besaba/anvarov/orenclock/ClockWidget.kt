@@ -10,7 +10,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import android.widget.RemoteViews
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -79,15 +78,14 @@ class ClockWidget : AppWidgetProvider() {
             val nextAlarm = manager.nextAlarmClock
             when {
                 nextAlarm != null -> {
-                    views.setOnClickPendingIntent(R.id.ivAlarm, manager.nextAlarmClock.showIntent)
+                    views.setOnClickPendingIntent(R.id.tvAlarm, manager.nextAlarmClock.showIntent)
                     views.setTextViewText(R.id.tvAlarm, getAlarmTime(manager.nextAlarmClock.triggerTime))
-                    views.setViewVisibility(R.id.tvAlarm, View.VISIBLE)
                 }
                 else -> {
                     val alarmIntent = Intent("android.intent.action.SET_ALARM")
                     val pIntent = PendingIntent.getActivity(context, appWidgetId, alarmIntent, 0)
-                    views.setOnClickPendingIntent(R.id.ivAlarm, pIntent)
-                    views.setViewVisibility(R.id.tvAlarm, View.INVISIBLE)
+                    views.setOnClickPendingIntent(R.id.tvAlarm, pIntent)
+                    views.setTextViewText(R.id.tvAlarm, "")
                 }
             }
 
