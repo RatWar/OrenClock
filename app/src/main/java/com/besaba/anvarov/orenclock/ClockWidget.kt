@@ -10,6 +10,8 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.util.Log
 import android.widget.RemoteViews
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -22,16 +24,43 @@ import java.util.*
 class ClockWidget : AppWidgetProvider() {
 
     private val updateWidget = "updateWidget"
+    //    private var mTimeChanged: BroadcastReceiver? = null
+    private var mTimeChanged: TimeChangeReceiver? = null
+    private val TAG = "ClockWidget"
 
+    //    вызывается системой при создании первого экземпляра виджета
     override fun onEnabled(context: Context?) {
         super.onEnabled(context)
         val intent = Intent(context, ClockWidget::class.java)
         intent.action = updateWidget
         val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
         val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        manager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pIntent)
+        manager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pIntent)
+        Log.d(TAG, "onEnabled: 1")
+
+//        mTimeChanged = TimeChangeReceiver()
+        context.registerReceiver(mTimeChanged, IntentFilter("android.intent.action.TIME_TICK"))
+
+//        val theFilter = IntentFilter()
+//        theFilter.addAction(Intent.ACTION_TIME_TICK)
+//        mTimeChanged = object : BroadcastReceiver() {
+//            override fun onReceive(context: Context, intent: Intent) {
+//                val strAction = intent.action
+//                if (strAction == Intent.ACTION_TIME_TICK) {
+//                    val thisAppWidget = ComponentName(context.packageName, ClockWidget::class.java.name)
+//                    val appWidgetManager = AppWidgetManager.getInstance(context)
+//                    val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
+//                    Log.d(TAG, "onReceive: ACTION_TIME_TICK")
+//                    for (appWidgetId in ids) {
+//                        updateAppWidget(context, appWidgetManager, appWidgetId)
+//                    }
+//                }
+//            }
+//        }
+        Log.d(TAG, "onEnabled: 2")
     }
 
+    //    вызывается при удалении последнего экземпляра виджета.
     override fun onDisabled(context: Context?) {
         super.onDisabled(context)
         val intent = Intent(context, ClockWidget::class.java)
@@ -39,8 +68,19 @@ class ClockWidget : AppWidgetProvider() {
         val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
         val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         manager.cancel(pIntent)
+
+        try {
+            context.unregisterReceiver(mTimeChanged)
+        } catch (e: IllegalArgumentException) {
+            mTimeChanged = null
+        }
+
     }
 
+    //    вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект
+//    AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод
+//    обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет
+//    AppWidgetManager, который мы получаем на вход.
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
@@ -48,6 +88,9 @@ class ClockWidget : AppWidgetProvider() {
         }
     }
 
+    //    В методе onReceive мы обязательно выполняем метод onReceive родительского класса, иначе просто
+//    перестанут работать обновления и прочие стандартные события виджета. Далее мы проверяем, что
+//    intent содержит наш action
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
@@ -61,7 +104,7 @@ class ClockWidget : AppWidgetProvider() {
                 updateAppWidget(context, appWidgetManager, appWidgetId)
             }
         }
-
+        Log.d(TAG, "onReceive:")
     }
 
     companion object {
@@ -78,16 +121,22 @@ class ClockWidget : AppWidgetProvider() {
             val nextAlarm = manager.nextAlarmClock
             when {
                 nextAlarm != null -> {
-                    views.setOnClickPendingIntent(R.id.tvAlarm, manager.nextAlarmClock.showIntent)
+                    views.setOnClickPendingIntent(R.id.llAlarm, manager.nextAlarmClock.showIntent)
                     views.setTextViewText(R.id.tvAlarm, getAlarmTime(manager.nextAlarmClock.triggerTime))
+                    views.setImageViewResource(R.id.ivAlarm, R.drawable.ic_alarm_on)
                 }
                 else -> {
                     val alarmIntent = Intent("android.intent.action.SET_ALARM")
                     val pIntent = PendingIntent.getActivity(context, appWidgetId, alarmIntent, 0)
-                    views.setOnClickPendingIntent(R.id.tvAlarm, pIntent)
+                    views.setOnClickPendingIntent(R.id.llAlarm, pIntent)
                     views.setTextViewText(R.id.tvAlarm, "")
+                    views.setImageViewResource(R.id.ivAlarm, R.drawable.ic_alarm_off)
                 }
             }
+
+            val timeIntent = Intent("android.settings.DATE_SETTINGS")
+            val pIntent = PendingIntent.getActivity(context, appWidgetId, timeIntent, 0)
+            views.setOnClickPendingIntent(R.id.tvTime, pIntent)
 
             // обновляю виджет
             appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -100,22 +149,20 @@ class ClockWidget : AppWidgetProvider() {
         }
 
         private fun getCurDate(): String {
-            return DateFormat.getDateInstance(DateFormat.FULL).format(Calendar.getInstance().time)
+            return DateFormat.getDateInstance(DateFormat.FULL)
+                    .format(Calendar.getInstance().time)
         }
 
         private fun getCurTime(): String {
-            val cal: Calendar = Calendar.getInstance()
+            val cal = Calendar.getInstance()
             val min = cal.get(Calendar.MINUTE)
             val hour = cal.get(Calendar.HOUR_OF_DAY)
 
             return when {
-                (cal.get(Calendar.MINUTE) <= 9) -> {
-                    hour.toString() + ":" + "0" + min
-                }
+                (min < 10) -> hour.toString() + ":" + "0" + min
                 else -> hour.toString() + ":" + min
             }
         }
     }
-
 }
 

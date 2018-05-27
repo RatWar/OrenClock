@@ -1,50 +1,67 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#009C"
-                android:padding="@dimen/widget_margin">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#009C"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin">
 
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="#009C"
-        android:contentDescription="@string/appwidget_time"
-        android:text="@string/appwidget_time"
-        android:textColor="#ffffff"
-        android:textSize="80sp"
-        android:textStyle="bold|italic"/>
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tvAlarm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/tvTime"
-        android:layout_alignBaseline="@+id/tvTime"
-        android:layout_marginStart="8dp"
-        android:background="#009C"
-        android:text="@string/txtAlarm"
-        android:textColor="#ffffff"
-        android:textSize="16sp"
-        android:textStyle="bold|italic"
-        android:drawableTop="@drawable/access_alarms"/>
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:contentDescription="@string/appwidget_time"
+            android:gravity="center_horizontal"
+            android:text="@string/appwidget_time"
+            android:textColor="#ffffff"
+            android:textSize="80sp"
+            android:textStyle="bold|italic"/>
+
+        <LinearLayout
+            android:id="@+id/llAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivAlarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/txtImage"
+                android:src="@drawable/ic_alarm_on"/>
+
+            <TextView
+                android:id="@+id/tvAlarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="@string/txtAlarm"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:textStyle="bold|italic"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="0dp"
-        android:background="#009C"
         android:contentDescription="@string/appwidget_date"
         android:text="@string/appwidget_date"
         android:textColor="#ffffff"
         android:textSize="24sp"
         android:textStyle="bold|italic"/>
 
-
-
-</RelativeLayout>
+</LinearLayout>
