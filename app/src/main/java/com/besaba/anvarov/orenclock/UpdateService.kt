@@ -4,28 +4,27 @@ import android.app.Service
 import android.appwidget.AppWidgetManager
 import android.content.*
 import android.os.IBinder
-import android.util.Log
 
 class UpdateService : Service() {
 
-    private val TAG = "ClockWidget"
+//    private val TAG = "ClockWidget"
 
     private val mTimeChanged = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Log.d(TAG, "TimeTickReceiver")
+//            Log.d(TAG, "TimeTickReceiver")
             updateClockWidget()
         }
     }
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate: UpdateService")
+//        Log.d(TAG, "onCreate: UpdateService")
         updateClockWidget()
         this.registerReceiver(mTimeChanged, IntentFilter("android.intent.action.TIME_TICK"))
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy: UpdateService")
+//        Log.d(TAG, "onDestroy: UpdateService")
         this.unregisterReceiver(mTimeChanged)
         super.onDestroy()
     }

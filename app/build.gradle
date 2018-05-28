@@ -7,7 +7,6 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 27
     defaultConfig {
-        resConfigs "en", "ru"
         applicationId "com.besaba.anvarov.orenclock"
         minSdkVersion 21
         targetSdkVersion 27
@@ -18,7 +17,6 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

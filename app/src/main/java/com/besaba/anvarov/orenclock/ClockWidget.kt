@@ -9,7 +9,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.RemoteViews
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -21,12 +20,12 @@ import java.util.*
  */
 class ClockWidget : AppWidgetProvider() {
 
-    private val TAG = "ClockWidget"
+//    private val TAG = "ClockWidget"
 
     //    вызывается системой при создании первого экземпляра виджета
     override fun onEnabled(context: Context?) {
         super.onEnabled(context)
-        Log.d(TAG, "onEnabled: ClockWidget")
+//        Log.d(TAG, "onEnabled: ClockWidget")
         val intentUpdate = Intent(context, UpdateService::class.java)
         context?.startService(intentUpdate)
     }
@@ -34,7 +33,7 @@ class ClockWidget : AppWidgetProvider() {
     //    вызывается при удалении последнего экземпляра виджета.
     override fun onDisabled(context: Context?) {
         super.onDisabled(context)
-        Log.d(TAG, "onDisabled: ClockWidget")
+//        Log.d(TAG, "onDisabled: ClockWidget")
         val intentUpdate = Intent(context, UpdateService::class.java)
         context?.stopService(intentUpdate)
     }
@@ -45,7 +44,7 @@ class ClockWidget : AppWidgetProvider() {
     //    AppWidgetManager, который мы получаем на вход.
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
-        Log.d(TAG, "onUpdate: ClockWidget")
+//        Log.d(TAG, "onUpdate: ClockWidget")
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }

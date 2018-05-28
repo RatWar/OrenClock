@@ -4,5 +4,5 @@
     <string name="appwidget_date">Дата</string>
     <string name="appwidget_time">Время</string>
     <string name="txtAlarm">Сигнал</string>
-    <string name="htAlarm">Сигнал</string>
+    <string name="txtImage">Рис.</string>
 </resources>

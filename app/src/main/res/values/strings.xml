@@ -3,6 +3,5 @@
     <string name="appwidget_date">Date</string>
     <string name="appwidget_time">Time</string>
     <string name="txtAlarm">Alarm</string>
-    <string name="htAlarm">Alarm</string>
     <string name="txtImage">Image</string>
 </resources>
