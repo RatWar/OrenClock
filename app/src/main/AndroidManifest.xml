@@ -25,6 +25,13 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/clock_widget_info"/>
         </receiver>
+
+        <service
+            android:name=".UpdateService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
     </application>
 
 </manifest>

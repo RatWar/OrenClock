@@ -7,10 +7,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.util.Log
 import android.widget.RemoteViews
 import java.text.DateFormat
@@ -24,57 +22,29 @@ import java.util.*
 class ClockWidget : AppWidgetProvider() {
 
     private val updateWidget = "updateWidget"
-    //    private var mTimeChanged: BroadcastReceiver? = null
-    private var mTimeChanged: TimeChangeReceiver? = null
     private val TAG = "ClockWidget"
+    private var service: PendingIntent? = null
 
     //    вызывается системой при создании первого экземпляра виджета
     override fun onEnabled(context: Context?) {
         super.onEnabled(context)
-        val intent = Intent(context, ClockWidget::class.java)
-        intent.action = updateWidget
-        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        manager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pIntent)
-        Log.d(TAG, "onEnabled: 1")
-
-//        mTimeChanged = TimeChangeReceiver()
-        context.registerReceiver(mTimeChanged, IntentFilter("android.intent.action.TIME_TICK"))
-
-//        val theFilter = IntentFilter()
-//        theFilter.addAction(Intent.ACTION_TIME_TICK)
-//        mTimeChanged = object : BroadcastReceiver() {
-//            override fun onReceive(context: Context, intent: Intent) {
-//                val strAction = intent.action
-//                if (strAction == Intent.ACTION_TIME_TICK) {
-//                    val thisAppWidget = ComponentName(context.packageName, ClockWidget::class.java.name)
-//                    val appWidgetManager = AppWidgetManager.getInstance(context)
-//                    val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
-//                    Log.d(TAG, "onReceive: ACTION_TIME_TICK")
-//                    for (appWidgetId in ids) {
-//                        updateAppWidget(context, appWidgetManager, appWidgetId)
-//                    }
-//                }
-//            }
-//        }
-        Log.d(TAG, "onEnabled: 2")
+        Log.d(TAG, "onEnabled: ClockWidget")
+//        val intent = Intent(context, ClockWidget::class.java)
+//        intent.action = updateWidget
+//        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+//        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//        manager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pIntent)
     }
 
     //    вызывается при удалении последнего экземпляра виджета.
     override fun onDisabled(context: Context?) {
         super.onDisabled(context)
+        Log.d(TAG, "onDisabled: ClockWidget")
         val intent = Intent(context, ClockWidget::class.java)
         intent.action = updateWidget
         val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
         val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         manager.cancel(pIntent)
-
-        try {
-            context.unregisterReceiver(mTimeChanged)
-        } catch (e: IllegalArgumentException) {
-            mTimeChanged = null
-        }
-
     }
 
     //    вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект
@@ -83,6 +53,7 @@ class ClockWidget : AppWidgetProvider() {
 //    AppWidgetManager, который мы получаем на вход.
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
+        Log.d(TAG, "onUpdate: ClockWidget")
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
@@ -91,25 +62,38 @@ class ClockWidget : AppWidgetProvider() {
     //    В методе onReceive мы обязательно выполняем метод onReceive родительского класса, иначе просто
 //    перестанут работать обновления и прочие стандартные события виджета. Далее мы проверяем, что
 //    intent содержит наш action
+    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
+        Log.d(TAG, "onReceive: ClockWidget")
 
-        if (intent?.action.equals(updateWidget) or
-                intent?.action.equals("android.app.action.NEXT_ALARM_CLOCK_CHANGED")) {
-            val thisAppWidget = ComponentName(context?.packageName, ClockWidget::class.java.name)
-            val appWidgetManager = AppWidgetManager.getInstance(context)
-            val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
+//        if (intentUpdate?.action.equals(updateWidget) or
+//                intentUpdate?.action.equals("android.app.action.NEXT_ALARM_CLOCK_CHANGED")) {
+//            val thisAppWidget = ComponentName(context?.packageName, ClockWidget::class.java.name)
+//            val appWidgetManager = AppWidgetManager.getInstance(context)
+//            val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
+//
+//            for (appWidgetId in ids) {
+//                updateAppWidget(context, appWidgetManager, appWidgetId)
+//            }
+//        }
 
-            for (appWidgetId in ids) {
-                updateAppWidget(context, appWidgetManager, appWidgetId)
-            }
+        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val startTime = Calendar.getInstance()
+        startTime.set(Calendar.MINUTE, 0)
+        startTime.set(Calendar.SECOND, 0)
+        startTime.set(Calendar.MILLISECOND, 0)
+        val intentUpdate = Intent(context, UpdateService::class.java)
+        if (service == null)
+        {
+            service = PendingIntent.getService(context, 0, intentUpdate, PendingIntent.FLAG_CANCEL_CURRENT)
         }
-        Log.d(TAG, "onReceive:")
+        manager.setRepeating(AlarmManager.RTC,startTime.time.time,60000,service)
     }
 
     companion object {
 
-        internal fun updateAppWidget(context: Context?, appWidgetManager: AppWidgetManager,
+        fun updateAppWidget(context: Context?, appWidgetManager: AppWidgetManager,
                                      appWidgetId: Int) {
 
             // делаю RemoteViews object
@@ -164,5 +148,6 @@ class ClockWidget : AppWidgetProvider() {
             }
         }
     }
+
 }
 
