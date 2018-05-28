@@ -21,74 +21,34 @@ import java.util.*
  */
 class ClockWidget : AppWidgetProvider() {
 
-    private val updateWidget = "updateWidget"
     private val TAG = "ClockWidget"
-    private var service: PendingIntent? = null
 
     //    вызывается системой при создании первого экземпляра виджета
     override fun onEnabled(context: Context?) {
         super.onEnabled(context)
         Log.d(TAG, "onEnabled: ClockWidget")
-//        val intent = Intent(context, ClockWidget::class.java)
-//        intent.action = updateWidget
-//        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-//        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//        manager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pIntent)
+        val intentUpdate = Intent(context, UpdateService::class.java)
+        context?.startService(intentUpdate)
     }
 
     //    вызывается при удалении последнего экземпляра виджета.
     override fun onDisabled(context: Context?) {
         super.onDisabled(context)
         Log.d(TAG, "onDisabled: ClockWidget")
-        val intent = Intent(context, ClockWidget::class.java)
-        intent.action = updateWidget
-        val pIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        manager.cancel(pIntent)
+        val intentUpdate = Intent(context, UpdateService::class.java)
+        context?.stopService(intentUpdate)
     }
 
     //    вызывается при обновлении виджета. На вход, кроме контекста, метод получает объект
-//    AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод
-//    обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет
-//    AppWidgetManager, который мы получаем на вход.
+    //    AppWidgetManager и список ID экземпляров виджетов, которые обновляются. Именно этот метод
+    //    обычно содержит код, который обновляет содержимое виджета. Для этого нам нужен будет
+    //    AppWidgetManager, который мы получаем на вход.
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
         Log.d(TAG, "onUpdate: ClockWidget")
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
-    }
-
-    //    В методе onReceive мы обязательно выполняем метод onReceive родительского класса, иначе просто
-//    перестанут работать обновления и прочие стандартные события виджета. Далее мы проверяем, что
-//    intent содержит наш action
-    @SuppressLint("UnsafeProtectedBroadcastReceiver")
-    override fun onReceive(context: Context?, intent: Intent?) {
-        super.onReceive(context, intent)
-        Log.d(TAG, "onReceive: ClockWidget")
-
-//        if (intentUpdate?.action.equals(updateWidget) or
-//                intentUpdate?.action.equals("android.app.action.NEXT_ALARM_CLOCK_CHANGED")) {
-//            val thisAppWidget = ComponentName(context?.packageName, ClockWidget::class.java.name)
-//            val appWidgetManager = AppWidgetManager.getInstance(context)
-//            val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
-//
-//            for (appWidgetId in ids) {
-//                updateAppWidget(context, appWidgetManager, appWidgetId)
-//            }
-//        }
-
-        val manager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val startTime = Calendar.getInstance()
-        startTime.set(Calendar.MINUTE, 0)
-        startTime.set(Calendar.SECOND, 0)
-        startTime.set(Calendar.MILLISECOND, 0)
-        val intentUpdate = Intent(context, UpdateService::class.java)
-        if (service == null)
-        {
-            service = PendingIntent.getService(context, 0, intentUpdate, PendingIntent.FLAG_CANCEL_CURRENT)
-        }
-        manager.setRepeating(AlarmManager.RTC,startTime.time.time,60000,service)
     }
 
     companion object {

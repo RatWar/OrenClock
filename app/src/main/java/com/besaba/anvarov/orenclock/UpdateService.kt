@@ -2,9 +2,7 @@ package com.besaba.anvarov.orenclock
 
 import android.app.Service
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.IBinder
 import android.util.Log
 
@@ -12,18 +10,24 @@ class UpdateService : Service() {
 
     private val TAG = "ClockWidget"
 
+    private val mTimeChanged = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.d(TAG, "TimeTickReceiver")
+            updateClockWidget()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "onCreate: UpdateService")
-
-        val mTimeChanged: TimeTickReceiver? = null
+        updateClockWidget()
         this.registerReceiver(mTimeChanged, IntentFilter("android.intent.action.TIME_TICK"))
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "onStartCommand: UpdateService")
-        updateClockWidget()
-        return super.onStartCommand(intent, flags, startId)
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy: UpdateService")
+        this.unregisterReceiver(mTimeChanged)
+        super.onDestroy()
     }
 
     private fun updateClockWidget() {//Обновление виджета
