@@ -28,8 +28,8 @@
 
         <service
             android:name=".UpdateService"
-            android:enabled="false"
-            android:exported="false">
+            android:enabled="true"
+            android:exported="true">
         </service>
     </application>
 

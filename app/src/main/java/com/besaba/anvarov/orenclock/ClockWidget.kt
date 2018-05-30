@@ -7,6 +7,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
@@ -20,7 +21,20 @@ import java.util.*
  */
 class ClockWidget : AppWidgetProvider() {
 
-//    private val TAG = "ClockWidget"
+    //    private val TAG = "ClockWidget"
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        super.onReceive(context, intent)
+//        Log.d(TAG, "onReceive: ClockWidget")
+        if (intent?.action.equals("android.app.action.NEXT_ALARM_CLOCK_CHANGED")) {
+            val thisAppWidget = ComponentName(context?.packageName, ClockWidget::class.java.name)
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
+            for (appWidgetId in ids) {
+                updateAppWidget(context, appWidgetManager, appWidgetId)
+            }
+        }
+    }
 
     //    вызывается системой при создании первого экземпляра виджета
     override fun onEnabled(context: Context?) {
