@@ -27,7 +27,7 @@ class ClockWidget : AppWidgetProvider() {
         super.onReceive(context, intent)
 //        Log.d(TAG, "onReceive: ClockWidget")
         if (intent?.action.equals("android.app.action.NEXT_ALARM_CLOCK_CHANGED")) {
-            val thisAppWidget = ComponentName(context?.packageName, ClockWidget::class.java.name)
+            val thisAppWidget = ComponentName(context!!.packageName, ClockWidget::class.java.name)
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val ids = appWidgetManager.getAppWidgetIds(thisAppWidget)
             for (appWidgetId in ids) {
@@ -66,8 +66,10 @@ class ClockWidget : AppWidgetProvider() {
 
     companion object {
 
-        fun updateAppWidget(context: Context?, appWidgetManager: AppWidgetManager,
-                                     appWidgetId: Int) {
+        fun updateAppWidget(
+            context: Context?, appWidgetManager: AppWidgetManager,
+            appWidgetId: Int
+        ) {
 
             // делаю RemoteViews object
             val views = RemoteViews(context?.packageName, R.layout.clock_widget)
@@ -107,7 +109,7 @@ class ClockWidget : AppWidgetProvider() {
 
         private fun getCurDate(): String {
             return DateFormat.getDateInstance(DateFormat.FULL)
-                    .format(Calendar.getInstance().time)
+                .format(Calendar.getInstance().time)
         }
 
         private fun getCurTime(): String {
