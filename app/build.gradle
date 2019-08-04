@@ -8,7 +8,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.besaba.anvarov.orenclock"
-        minSdkVersion 21
+        minSdkVersion 22
         targetSdkVersion 29
         versionCode 10
         versionName "9.0"
